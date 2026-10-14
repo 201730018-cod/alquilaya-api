@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AlquilaYa S.A. — Panel de gestión</title>
+    <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+
+    <!-- ============ PANTALLA DE ACCESO ============ -->
+    <div id="pantallaLogin" class="login-fondo">
+        <form class="login-caja" id="formLogin">
+            <div class="login-marca">
+                <span class="login-logo">AY</span>
+                <div>
+                    <h1>AlquilaYa S.A.</h1>
+                    <p>Panel de gestión de flota</p>
+                </div>
+            </div>
+
+            <label for="loginUsuario">Correo electrónico</label>
+            <input type="email" id="loginUsuario" autocomplete="username"
+                   placeholder="admin@alquilaya.com" required>
+
+            <label for="loginPassword">Contraseña</label>
+            <input type="password" id="loginPassword" autocomplete="current-password" required>
+
+            <p class="login-error" id="loginError" hidden></p>
+
+            <button type="submit" class="btn btn-primario btn-bloque">Entrar</button>
+        </form>
+    </div>
+
+    <!-- ============ APLICACIÓN ============ -->
+    <div id="aplicacion" hidden>
+
+        <aside class="barra-lateral">
+            <div class="marca">
+                <span class="marca-logo">AY</span>
+                <span class="marca-texto">AlquilaYa</span>
+            </div>
+
+            <nav class="menu">
+                <button class="menu-item activa" data-seccion="panel">Panel</button>
+                <button class="menu-item" data-seccion="vehiculos">Vehículos</button>
+                <button class="menu-item" data-seccion="clientes">Clientes</button>
+                <button class="menu-item" data-seccion="alquileres">Alquileres</button>
+                <button class="menu-item" data-seccion="mantenimientos">Mantenimientos</button>
+                <button class="menu-item" data-seccion="oficinas">Oficinas</button>
+            </nav>
+
+            <div class="sesion">
+                <p class="sesion-usuario" id="sesionUsuario"></p>
+                <p class="sesion-rol" id="sesionRol"></p>
+                <button class="btn btn-texto" id="btnSalir">Cerrar sesión</button>
+            </div>
+        </aside>
+
+        <main class="contenido">
+
+            <div id="aviso" class="aviso" hidden></div>
+
+            <!-- ---------- PANEL ---------- -->
+            <section class="seccion activa" id="seccion-panel">
+                <header class="encabezado">
+                    <h2>Panel general</h2>
+                    <p>Resumen del estado actual de la flota y las operaciones.</p>
+                </header>
+
+                <div class="tarjetas">
+                    <article class="tarjeta">
+                        <span class="tarjeta-etiqueta">Vehículos totales</span>
+                        <strong class="tarjeta-valor" id="kpiVehiculos">—</strong>
+                    </article>
+                    <article class="tarjeta">
+                        <span class="tarjeta-etiqueta">Disponibles</span>
+                        <strong class="tarjeta-valor verde" id="kpiDisponibles">—</strong>
+                    </article>
+                    <article class="tarjeta">
+                        <span class="tarjeta-etiqueta">Alquileres activos</span>
+                        <strong class="tarjeta-valor azul" id="kpiActivos">—</strong>
+                    </article>
+                    <article class="tarjeta">
+                        <span class="tarjeta-etiqueta">Devoluciones vencidas</span>
+                        <strong class="tarjeta-valor rojo" id="kpiVencidos">—</strong>
+                    </article>
+                </div>
+
+                <div class="panel">
+                    <h3>Devoluciones vencidas</h3>
+                    <p class="panel-nota">
+                        Alquileres activos cuya fecha pactada de devolución ya pasó.
+                    </p>
+                    <div class="tabla-envoltura">
+                        <table class="tabla">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Cliente</th>
+                                    <th>Vehículo</th>
+                                    <th>Devolución pactada</th>
+                                    <th>Días de retraso</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tablaVencidos"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ---------- VEHÍCULOS ---------- -->
+            <section class="seccion" id="seccion-vehiculos">
+                <header class="encabezado">
+                    <h2>Vehículos</h2>
+                    <p>Inventario de la flota distribuido por oficina.</p>
+                </header>
+
+                <div class="panel">
+                    <h3>Registrar vehículo</h3>
+                    <form class="formulario" id="formVehiculo">
+                        <div class="campo">
+                            <label for="vehOficina">Oficina</label>
+                            <select id="vehOficina" required></select>
+                        </div>
+                        <div class="campo">
+                            <label for="vehTipo">Tipo</label>
+                            <select id="vehTipo" required>
+                                <option value="COCHE">Coche</option>
+                                <option value="COCHE_ELECTRICO">Coche eléctrico</option>
+                                <option value="MOTO">Moto</option>
+                                <option value="FURGONETA">Furgoneta</option>
+                                <option value="BICICLETA">Bicicleta</option>
+                            </select>
+                        </div>
+                        <div class="campo">
+                            <label for="vehMarca">Marca</label>
+                            <input type="text" id="vehMarca" placeholder="Seat" required>
+                        </div>
+                        <div class="campo">
+                            <label for="vehModelo">Modelo</label>
+                            <input type="text" id="vehModelo" placeholder="Leon" required>
+                        </div>
+                        <div class="campo">
+                            <label for="vehAnio">Año</label>
+                            <input type="number" id="vehAnio" value="2024" min="1950" max="2100" required>
+                        </div>
+                        <div class="campo">
+                            <label for="vehMatricula">Matrícula</label>
+                            <input type="text" id="vehMatricula" placeholder="ABC-1234" required>
+                        </div>
+                        <div class="campo">
+                            <label for="vehTarifa">Tarifa diaria</label>
+                            <input type="number" id="vehTarifa" step="0.01" min="0.01"
+                                   placeholder="850.00" required>
+                        </div>
+                        <div class="campo">
+                            <label for="vehKm">Kilometraje</label>
+                            <input type="number" id="vehKm" value="0" min="0" required>
+                        </div>
+                        <div class="campo campo-accion">
+                            <button type="submit" class="btn btn-primario">Registrar</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-cabecera">
+                        <h3>Flota registrada</h3>
+                        <select id="filtroVehiculos" class="filtro">
+                            <option value="">Todos los estados</option>
+                            <option value="DISPONIBLE">Disponibles</option>
+                            <option value="ALQUILADO">Alquilados</option>
+                            <option value="MANTENIMIENTO">En mantenimiento</option>
+                            <option value="BAJA">De baja</option>
+                        </select>
+                    </div>
+                    <div class="tabla-envoltura">
+                        <table class="tabla">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Matrícula</th>
+                                    <th>Vehículo</th>
+                                    <th>Tipo</th>
+                                    <th>Oficina</th>
+                                    <th>Tarifa</th>
+                                    <th>Km</th>
+                                    <th>Estado</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="tablaVehiculos"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ---------- CLIENTES ---------- -->
+            <section class="seccion" id="seccion-clientes">
+                <header class="encabezado">
+                    <h2>Clientes</h2>
+                    <p>Personas registradas con licencia vigente para alquilar.</p>
+                </header>
+
+                <div class="panel">
+                    <h3>Registrar cliente</h3>
+                    <form class="formulario" id="formCliente">
+                        <div class="campo">
+                            <label for="cliNombre">Nombre</label>
+                            <input type="text" id="cliNombre" placeholder="Ana" required>
+                        </div>
+                        <div class="campo">
+                            <label for="cliApellido">Apellido</label>
+                            <input type="text" id="cliApellido" placeholder="Mendez" required>
+                        </div>
+                        <div class="campo">
+                            <label for="cliEmail">Correo electrónico</label>
+                            <input type="email" id="cliEmail" placeholder="ana@correo.com" required>
+                        </div>
+                        <div class="campo">
+                            <label for="cliLicencia">Licencia de conducir</label>
+                            <input type="text" id="cliLicencia" placeholder="LIC-0012345" required>
+                        </div>
+                        <div class="campo">
+                            <label for="cliTelefono">Teléfono</label>
+                            <input type="tel" id="cliTelefono" placeholder="2291234567">
+                        </div>
+                        <div class="campo campo-accion">
+                            <button type="submit" class="btn btn-primario">Registrar</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="panel">
+                    <h3>Clientes registrados</h3>
+                    <div class="tabla-envoltura">
+                        <table class="tabla">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nombre</th>
+                                    <th>Correo</th>
+                                    <th>Licencia</th>
+                                    <th>Teléfono</th>
+                                    <th>Alta</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="tablaClientes"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ---------- ALQUILERES ---------- -->
+            <section class="seccion" id="seccion-alquileres">
+                <header class="encabezado">
+                    <h2>Alquileres</h2>
+                    <p>El precio se calcula solo según el tipo de vehículo y los días contratados.</p>
+                </header>
+
+                <div class="panel">
+                    <h3>Nuevo alquiler</h3>
+                    <form class="formulario" id="formAlquiler">
+                        <div class="campo campo-ancho">
+                            <label for="alqCliente">Cliente</label>
+                            <select id="alqCliente" required></select>
+                        </div>
+                        <div class="campo campo-ancho">
+                            <label for="alqVehiculo">Vehículo disponible</label>
+                            <select id="alqVehiculo" required></select>
+                        </div>
+                        <div class="campo">
+                            <label for="alqInicio">Fecha de alquiler</label>
+                            <input type="date" id="alqInicio" required>
+                        </div>
+                        <div class="campo">
+                            <label for="alqFin">Fecha de devolución</label>
+                            <input type="date" id="alqFin" required>
+                        </div>
+                        <div class="campo campo-ancho">
+                            <label for="alqObs">Observaciones</label>
+                            <input type="text" id="alqObs" placeholder="Opcional">
+                        </div>
+                        <div class="campo campo-accion">
+                            <button type="submit" class="btn btn-primario">Registrar alquiler</button>
+                        </div>
+                    </form>
+                    <p class="estimacion" id="estimacionPrecio"></p>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-cabecera">
+                        <h3>Alquileres</h3>
+                        <select id="filtroAlquileres" class="filtro">
+                            <option value="">Todos</option>
+                            <option value="ACTIVO">Activos</option>
+                            <option value="FINALIZADO">Finalizados</option>
+                            <option value="CANCELADO">Cancelados</option>
+                        </select>
+                    </div>
+                    <div class="tabla-envoltura">
+                        <table class="tabla">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Cliente</th>
+                                    <th>Vehículo</th>
+                                    <th>Desde</th>
+                                    <th>Hasta</th>
+                                    <th>Días</th>
+                                    <th>Total</th>
+                                    <th>Estado</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="tablaAlquileres"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ---------- MANTENIMIENTOS ---------- -->
+            <section class="seccion" id="seccion-mantenimientos">
+                <header class="encabezado">
+                    <h2>Mantenimientos</h2>
+                    <p>Historial de servicios de cada vehículo de la flota.</p>
+                </header>
+
+                <div class="panel">
+                    <h3>Registrar servicio</h3>
+                    <form class="formulario" id="formMantenimiento">
+                        <div class="campo campo-ancho">
+                            <label for="manVehiculo">Vehículo</label>
+                            <select id="manVehiculo" required></select>
+                        </div>
+                        <div class="campo">
+                            <label for="manFecha">Fecha</label>
+                            <input type="date" id="manFecha" required>
+                        </div>
+                        <div class="campo">
+                            <label for="manCosto">Costo</label>
+                            <input type="number" id="manCosto" step="0.01" min="0"
+                                   placeholder="1200.00" required>
+                        </div>
+                        <div class="campo">
+                            <label for="manKm">Kilometraje</label>
+                            <input type="number" id="manKm" min="0" required>
+                        </div>
+                        <div class="campo campo-ancho">
+                            <label for="manDescripcion">Descripción</label>
+                            <input type="text" id="manDescripcion"
+                                   placeholder="Cambio de aceite y filtros" required>
+                        </div>
+                        <div class="campo campo-accion">
+                            <button type="submit" class="btn btn-primario">Registrar</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="panel">
+                    <h3>Servicios registrados</h3>
+                    <div class="tabla-envoltura">
+                        <table class="tabla">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Vehículo</th>
+                                    <th>Fecha</th>
+                                    <th>Descripción</th>
+                                    <th>Km</th>
+                                    <th>Costo</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="tablaMantenimientos"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ---------- OFICINAS ---------- -->
+            <section class="seccion" id="seccion-oficinas">
+                <header class="encabezado">
+                    <h2>Oficinas</h2>
+                    <p>Sedes donde se resguarda y se entrega la flota.</p>
+                </header>
+
+                <div class="panel">
+                    <h3>Registrar oficina</h3>
+                    <form class="formulario" id="formOficina">
+                        <div class="campo">
+                            <label for="ofiNombre">Nombre</label>
+                            <input type="text" id="ofiNombre" placeholder="Sucursal Centro" required>
+                        </div>
+                        <div class="campo campo-ancho">
+                            <label for="ofiDireccion">Dirección</label>
+                            <input type="text" id="ofiDireccion" placeholder="Av. Independencia 120" required>
+                        </div>
+                        <div class="campo">
+                            <label for="ofiCiudad">Ciudad</label>
+                            <input type="text" id="ofiCiudad" placeholder="Veracruz" required>
+                        </div>
+                        <div class="campo">
+                            <label for="ofiRegion">Región</label>
+                            <input type="text" id="ofiRegion" placeholder="Veracruz" required>
+                        </div>
+                        <div class="campo campo-accion">
+                            <button type="submit" class="btn btn-primario">Registrar</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="panel">
+                    <h3>Oficinas registradas</h3>
+                    <div class="tabla-envoltura">
+                        <table class="tabla">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nombre</th>
+                                    <th>Dirección</th>
+                                    <th>Ciudad</th>
+                                    <th>Región</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="tablaOficinas"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
